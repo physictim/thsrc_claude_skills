@@ -4,6 +4,23 @@
 
 一個用於 Claude Code 和 Claude Desktop 的台灣高鐵（THSRC）即時資訊查詢技能。透過 TDX (運輸資料流通服務) API 提供時刻表、即時班次、車次狀態和座位查詢功能。
 
+## 🚀 快速開始
+
+在 Claude Code 中執行：
+
+```bash
+/plugin marketplace add physictim/thsrc_claude_skills
+/plugin install physictim@thsrc
+```
+
+然後就可以開始查詢高鐵資訊了！
+
+```
+查詢明天台北到左營的高鐵班次
+```
+
+> **注意**：使用前需要先設定 TDX API 憑證（詳見[設定](#️-設定)）
+
 ## ✨ 功能特色
 
 - 🚉 **車站資訊查詢** - 顯示所有 12 個高鐵車站詳細資訊
@@ -15,7 +32,21 @@
 
 ## 📦 安裝
 
-### 在 Claude Desktop 中安裝
+### 方法 1：使用 Claude Code Plugin Marketplace（推薦）
+
+在 Claude Code 中執行以下指令：
+
+```bash
+# 加入 marketplace
+/plugin marketplace add physictim/thsrc_claude_skills
+
+# 安裝 skill
+/plugin install physictim@thsrc
+```
+
+這是最快速且簡單的安裝方式！
+
+### 方法 2：在 Claude Desktop 中安裝
 
 1. 下載最新版本的 `thsrc.zip` from [Releases](https://github.com/physictim/thsrc_claude_skills/releases)
 2. 開啟 Claude Desktop
@@ -23,7 +54,7 @@
 4. 選擇下載的 `thsrc.zip` 檔案
 5. 完成安裝！
 
-### 手動安裝
+### 方法 3：手動安裝
 
 ```bash
 # 複製儲存庫
