@@ -2,21 +2,21 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-一個用於 Claude Code 和 Claude Desktop 的台灣高鐵（THSRC）即時資訊查詢技能。透過 TDX (運輸資料流通服務) API 提供時刻表、即時班次、車次狀態和座位查詢功能。
+一個用於本地環境的台灣高鐵（THSRC）即時資訊查詢工具。透過 TDX (運輸資料流通服務) API 提供時刻表、即時班次、車次狀態和座位查詢功能。
+
+> ⚠️ **重要說明**：由於 Claude Desktop Skills 的網路限制，本工具**無法**在 Claude Desktop 中使用。
+> 如需在 Claude Desktop 中使用高鐵查詢功能，請使用 [THSRC MCP Server](https://github.com/physictim/thsrc_mcp) 版本。
 
 ## 🚀 快速開始
 
-在 Claude Code 中執行：
+### 本地命令列使用
+
+設定 TDX API 憑證後，直接執行：
 
 ```bash
-/plugin marketplace add physictim/thsrc_claude_skills
-/plugin install physictim@thsrc
-```
-
-然後就可以開始查詢高鐵資訊了！
-
-```
-查詢明天台北到左營的高鐵班次
+cd scripts
+python thsrc_api.py stations
+python thsrc_api.py timetable 台北 左營 2024-01-15
 ```
 
 > **注意**：使用前需要先設定 TDX API 憑證（詳見[設定](#️-設定)）
@@ -32,37 +32,21 @@
 
 ## 📦 安裝
 
-### 方法 1：使用 Claude Code Plugin Marketplace（推薦）
-
-在 Claude Code 中執行以下指令：
-
-```bash
-# 加入 marketplace
-/plugin marketplace add physictim/thsrc_claude_skills
-
-# 安裝 skill
-/plugin install physictim@thsrc
-```
-
-這是最快速且簡單的安裝方式！
-
-### 方法 2：在 Claude Desktop 中安裝
-
-1. 下載最新版本的 `thsrc.zip` from [Releases](https://github.com/physictim/thsrc_claude_skills/releases)
-2. 開啟 Claude Desktop
-3. 點選設定 → Skills → Import Skill
-4. 選擇下載的 `thsrc.zip` 檔案
-5. 完成安裝！
-
-### 方法 3：手動安裝
+### 方法 1：直接複製儲存庫（推薦）
 
 ```bash
 # 複製儲存庫
 git clone https://github.com/physictim/thsrc_claude_skills.git
 
-# 複製到 Claude skills 目錄
-cp -r thsrc_claude_skills ~/.claude/skills/thsrc
+# 進入專案目錄
+cd thsrc_claude_skills
 ```
+
+### 方法 2：下載 ZIP 檔案
+
+1. 前往 [Releases](https://github.com/physictim/thsrc_claude_skills/releases) 下載最新版本
+2. 解壓縮到您想要的目錄
+3. 進入專案資料夾
 
 ## ⚙️ 設定
 
@@ -97,169 +81,154 @@ $env:TDX_CLIENT_SECRET="your_client_secret"
 
 ## 📖 使用方法
 
-安裝完成後，在 Claude Code 或 Claude Desktop 中可以直接使用自然語言查詢：
+### 命令列介面
 
-### 中文查詢範例
+安裝並設定環境變數後，可以使用以下指令查詢高鐵資訊：
+
+### 指令範例
 
 #### 1️⃣ 車站列表查詢
 
-**查詢範例：**
-```
-顯示所有高鐵車站列表
+**指令：**
+```bash
+python scripts/thsrc_api.py stations
 ```
 
-**回答格式：**
-```
-台灣高鐵共有 12 個車站：
-
-1. 南港站 (Nangang) - ID: 0990
-2. 台北站 (Taipei) - ID: 1000
-3. 板橋站 (Banqiao) - ID: 1010
-4. 桃園站 (Taoyuan) - ID: 1020
-5. 新竹站 (Hsinchu) - ID: 1030
-6. 苗栗站 (Miaoli) - ID: 1035
-7. 台中站 (Taichung) - ID: 1040
-8. 彰化站 (Changhua) - ID: 1043
-9. 雲林站 (Yunlin) - ID: 1047
-10. 嘉義站 (Chiayi) - ID: 1050
-11. 台南站 (Tainan) - ID: 1060
-12. 左營站 (Zuoying) - ID: 1070
+**輸出範例：**
+```json
+[
+  {
+    "StationID": "0990",
+    "StationName": {"Zh_tw": "南港", "En": "Nangang"}
+  },
+  {
+    "StationID": "1000",
+    "StationName": {"Zh_tw": "台北", "En": "Taipei"}
+  },
+  ...
+]
 ```
 
 ---
 
 #### 2️⃣ 時刻表查詢
 
-**查詢範例：**
-```
-查詢明天台北到左營的高鐵班次
+**指令：**
+```bash
+# 使用中文站名
+python scripts/thsrc_api.py timetable 台北 左營 2024-01-15
+
+# 使用英文站名
+python scripts/thsrc_api.py timetable Taipei Zuoying 2024-01-15
+
+# 使用站點 ID
+python scripts/thsrc_api.py timetable 1000 1070 2024-01-15
 ```
 
-**回答格式：**
-```
-2026-01-14 台北→左營 高鐵班次（共找到 45 班次）
-
-🚄 直達車次：
-┌─────────┬──────────┬──────────┬──────┐
-│ 車次     │ 出發時間  │ 抵達時間  │ 車程  │
-├─────────┼──────────┼──────────┼──────┤
-│ 803     │ 06:30    │ 08:15    │ 1h45m│
-│ 807     │ 07:00    │ 08:45    │ 1h45m│
-│ 813     │ 08:00    │ 09:45    │ 1h45m│
-│ ...     │ ...      │ ...      │ ...  │
-└─────────┴──────────┴──────────┴──────┘
-
-註：以上為直達車次，實際票價與座位狀態請另行查詢
+**輸出範例：**
+```json
+[
+  {
+    "TrainNo": "803",
+    "DepartureTime": "06:30:00",
+    "ArrivalTime": "08:15:00",
+    "StopTimes": [...]
+  },
+  ...
+]
 ```
 
 ---
 
 #### 3️⃣ 即時班次查詢
 
-**查詢範例：**
-```
-台中車站現在有哪些班次？
+**指令：**
+```bash
+# 使用中文站名
+python scripts/thsrc_api.py live 台中
+
+# 使用英文站名
+python scripts/thsrc_api.py live Taichung
+
+# 使用站點 ID
+python scripts/thsrc_api.py live 1040
 ```
 
-**回答格式：**
-```
-台中站即時班次資訊（2026-01-13 14:30 更新）
-
-📍 北上列車：
-┌─────────┬──────────┬──────┬──────────┐
-│ 車次    │ 預計時間  │ 狀態 │ 目的地   │
-├─────────┼──────────┼──────┼──────────┤
-│ 152     │ 14:35    │ 準點 │ 南港     │
-│ 256     │ 14:52    │ 準點 │ 台北     │
-│ 160     │ 15:10    │ 準點 │ 板橋     │
-└─────────┴──────────┴──────┴──────────┘
-
-📍 南下列車：
-┌─────────┬──────────┬──────┬──────────┐
-│ 車次    │ 預計時間  │ 狀態 │ 目的地   │
-├─────────┼──────────┼──────┼──────────┤
-│ 151     │ 14:40    │ 準點 │ 左營     │
-│ 655     │ 14:55    │ 誤點 │ 台南     │
-│         │          │ 3分  │          │
-└─────────┴──────────┴──────┴──────────┘
+**輸出範例：**
+```json
+[
+  {
+    "TrainNo": "152",
+    "Direction": "0",
+    "ScheduledArrivalTime": "14:35:00",
+    "DelayTime": 0,
+    "TrainStatus": "準點"
+  },
+  ...
+]
 ```
 
 ---
 
 #### 4️⃣ 特定車次資訊查詢
 
-**查詢範例：**
+**指令：**
+```bash
+python scripts/thsrc_api.py train 823 2024-01-15
 ```
-823 車次明天的詳細資訊
-```
 
-**回答格式：**
-```
-🚄 車次 823 詳細資訊（2026-01-14）
-
-列車類型：直達車
-起訖站：台北 → 左營
-總車程：1 小時 45 分鐘
-
-停靠站時刻表：
-┌────┬──────────┬──────────┬──────────┐
-│序號│ 車站     │ 抵達時間  │ 出發時間  │
-├────┼──────────┼──────────┼──────────┤
-│ 1  │ 台北     │ ----     │ 13:00    │
-│ 2  │ 板橋     │ 13:07    │ 13:09    │
-│ 3  │ 台中     │ 13:49    │ 13:51    │
-│ 4  │ 台南     │ 14:30    │ 14:32    │
-│ 5  │ 左營     │ 14:45    │ ----     │
-└────┴──────────┴──────────┴──────────┘
-
-💡 提醒：實際發車時間可能因應營運狀況調整
+**輸出範例：**
+```json
+[
+  {
+    "TrainNo": "823",
+    "TrainTypeName": {"Zh_tw": "直達車"},
+    "StopTimes": [
+      {
+        "StationName": {"Zh_tw": "台北"},
+        "DepartureTime": "13:00:00"
+      },
+      {
+        "StationName": {"Zh_tw": "板橋"},
+        "ArrivalTime": "13:07:00",
+        "DepartureTime": "13:09:00"
+      },
+      ...
+    ]
+  }
+]
 ```
 
 ---
 
 #### 5️⃣ 座位狀態查詢
 
-**查詢範例：**
-```
-台北到高雄明天還有座位嗎？
-```
-
-**回答格式：**
-```
-2026-01-14 台北→左營（高雄）座位狀態
-
-✅ 有座位的班次：
-┌─────────┬──────────┬────────────────────┐
-│ 車次    │ 出發時間  │ 座位狀態           │
-├─────────┼──────────┼────────────────────┤
-│ 803     │ 06:30    │ ⭕ 充足            │
-│ 807     │ 07:00    │ 🔶 少量（標準座）  │
-│ 813     │ 08:00    │ ⭕ 充足            │
-│ 823     │ 09:00    │ 🔶 少量（商務座）  │
-│ ...     │ ...      │ ...                │
-└─────────┴──────────┴────────────────────┘
-
-❌ 已售完的班次：
-- 835 (10:00)、845 (11:00)、857 (12:00)
-
-座位圖示說明：
-⭕ 充足 - 兩種座位皆充足
-🔶 少量 - 部分座位類型剩餘較少
-❌ 售完 - 該班次已無座位
-
-💡 資料更新時間：每 10 分鐘（當日）/ 每日 10:00、16:00、22:00（未來日期）
+**指令：**
+```bash
+# 查詢台北到左營（高雄）的座位狀態
+python scripts/thsrc_api.py seats 台北 左營 2024-01-15
 ```
 
----
+**輸出範例：**
+```json
+[
+  {
+    "TrainNo": "803",
+    "DepartureTime": "06:30:00",
+    "StandardSeatStatus": "Available",
+    "BusinessSeatStatus": "Available"
+  },
+  {
+    "TrainNo": "807",
+    "DepartureTime": "07:00:00",
+    "StandardSeatStatus": "Limited",
+    "BusinessSeatStatus": "Available"
+  },
+  ...
+]
+```
 
-### 英文查詢範例
-```
-Show me THSR schedules from Taipei to Zuoying tomorrow
-What trains are at Taichung station now?
-Give me details for train 823 tomorrow
-Are there available seats from Taipei to Kaohsiung tomorrow?
-List all THSR stations
-```
+> 💡 **資料更新頻率**：當日查詢每 10 分鐘更新 / 未來日期每日 10:00、16:00、22:00 更新
 
 ## 🚉 支援的車站
 
