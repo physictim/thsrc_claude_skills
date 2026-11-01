@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-台湾高铁 TDX API 查询工具
-用于查询高铁时刻表、班次状态和座位信息
+台灣高鐵 TDX API 查詢工具
+用於查詢高鐵時刻表、班次狀態和座位信息
 """
 import asyncio
 import httpx
@@ -12,15 +12,17 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 
 class THSRAPIClient:
-    """台湾高铁 API 客户端"""
+    """台灣高鐵 API 客戶端"""
 
-    # 车站映射表
+    # 車站映射表
     STATION_NAME_TO_ID = {
-        "南港": "0990", "台北": "1000", "板桥": "1010",
-        "桃园": "1020", "新竹": "1030", "苗栗": "1035",
-        "台中": "1040", "彰化": "1043", "云林": "1047",
-        "嘉义": "1050", "台南": "1060", "左营": "1070",
-        "高雄": "1070"  # 别名
+        "南港": "0990", "台北": "1000", "臺北": "1000", "板橋": "1010",
+        "桃園": "1020", "新竹": "1030", "苗栗": "1035",
+        "台中": "1040", "臺中": "1040", "彰化": "1043", "雲林": "1047",
+        "嘉義": "1050", "台南": "1060", "臺南": "1060", "左營": "1070",
+        "高雄": "1070",  # 別名
+        # 簡體字也認得
+        "板桥": "1010", "桃园": "1020", "云林": "1047", "嘉义": "1050", "左营": "1070",
     }
 
     STATION_EN_TO_ID = {
@@ -38,20 +40,20 @@ class THSRAPIClient:
         self.base_url = "https://tdx.transportdata.tw/api/basic/v2"
 
     def normalize_station(self, station: str) -> str:
-        """将站名或ID转换为标准站点ID"""
-        # 如果已经是ID格式，直接返回
+        """將站名或ID轉換爲標準站點ID"""
+        # 如果已經是ID格式，直接返回
         if station.isdigit() and len(station) == 4:
             return station
 
-        # 尝试中文站名
+        # 嘗試中文站名
         if station in self.STATION_NAME_TO_ID:
             return self.STATION_NAME_TO_ID[station]
 
-        # 尝试英文站名
+        # 嘗試英文站名
         if station in self.STATION_EN_TO_ID:
             return self.STATION_EN_TO_ID[station]
 
-        raise ValueError(f"无效的车站名称或ID: {station}")
+        raise ValueError(f"無效的車站名稱或ID: {station}")
 
     async def get_access_token(self) -> str:
         """取得或更新 Access Token"""
@@ -77,7 +79,7 @@ class THSRAPIClient:
         return self.access_token
 
     async def api_request(self, endpoint: str, params: Dict = None) -> Dict[str, Any]:
-        """通用 API 请求方法"""
+        """通用 API 請求方法"""
         token = await self.get_access_token()
         headers = {
             "authorization": f"Bearer {token}",
@@ -94,7 +96,7 @@ class THSRAPIClient:
             return response.json()
 
     async def get_stations(self) -> Dict[str, Any]:
-        """取得台湾高铁车站列表"""
+        """取得台灣高鐵車站列表"""
         return await self.api_request("Rail/THSR/Station")
 
     async def get_timetable(
@@ -104,12 +106,12 @@ class THSRAPIClient:
         travel_date: str
     ) -> Dict[str, Any]:
         """
-        查询高铁时刻表
+        查詢高鐵時刻表
 
         Args:
             origin_station: 起站（支持中文、英文或ID）
             destination_station: 迄站（支持中文、英文或ID）
-            travel_date: 乘车日期 (YYYY-MM-DD)
+            travel_date: 乘車日期 (YYYY-MM-DD)
         """
         origin_id = self.normalize_station(origin_station)
         dest_id = self.normalize_station(destination_station)
@@ -118,10 +120,10 @@ class THSRAPIClient:
 
     async def get_live_schedule(self, station: str) -> Dict[str, Any]:
         """
-        取得指定车站即时时刻表
+        取得指定車站即時時刻表
 
         Args:
-            station: 车站名称或ID
+            station: 車站名稱或ID
         """
         station_id = self.normalize_station(station)
         endpoint = f"Rail/THSR/LiveBoard/Station/{station_id}"
@@ -129,11 +131,11 @@ class THSRAPIClient:
 
     async def get_train_info(self, train_no: str, travel_date: str) -> Dict[str, Any]:
         """
-        查询特定班次资讯
+        查詢特定班次資訊
 
         Args:
-            train_no: 车次号码（例如：823）
-            travel_date: 乘车日期 (YYYY-MM-DD)
+            train_no: 車次號碼（例如：823）
+            travel_date: 乘車日期 (YYYY-MM-DD)
         """
         endpoint = f"Rail/THSR/DailyTimetable/TrainNo/{train_no}/{travel_date}"
         return await self.api_request(endpoint)
@@ -145,12 +147,12 @@ class THSRAPIClient:
         train_date: str
     ) -> Dict[str, Any]:
         """
-        查询剩余座位状态
+        查詢剩餘座位狀態
 
         Args:
             origin_station: 起站
             destination_station: 迄站
-            train_date: 乘车日期 (YYYY-MM-DD)
+            train_date: 乘車日期 (YYYY-MM-DD)
         """
         origin_id = self.normalize_station(origin_station)
         dest_id = self.normalize_station(destination_station)
@@ -164,17 +166,17 @@ async def main():
         print("使用方式:")
         print("  python thsrc_api.py stations")
         print("  python thsrc_api.py timetable <起站> <迄站> <日期>")
-        print("  python thsrc_api.py live <车站>")
-        print("  python thsrc_api.py train <车次> <日期>")
+        print("  python thsrc_api.py live <車站>")
+        print("  python thsrc_api.py train <車次> <日期>")
         print("  python thsrc_api.py seats <起站> <迄站> <日期>")
         sys.exit(1)
 
-    # 从环境变量读取 API 凭证
+    # 從環境變量讀取 API 憑證
     client_id = os.getenv("TDX_CLIENT_ID")
     client_secret = os.getenv("TDX_CLIENT_SECRET")
 
     if not client_id or not client_secret:
-        print("错误: 请设置环境变量 TDX_CLIENT_ID 和 TDX_CLIENT_SECRET")
+        print("錯誤: 請設置環境變量 TDX_CLIENT_ID 和 TDX_CLIENT_SECRET")
         sys.exit(1)
 
     client = THSRAPIClient(client_id, client_secret)
@@ -192,12 +194,12 @@ async def main():
         elif command == "seats" and len(sys.argv) >= 5:
             result = await client.get_available_seats(sys.argv[2], sys.argv[3], sys.argv[4])
         else:
-            print("无效的命令或参数")
+            print("無效的命令或參數")
             sys.exit(1)
 
         print(json.dumps(result, ensure_ascii=False, indent=2))
     except Exception as e:
-        print(f"错误: {e}", file=sys.stderr)
+        print(f"錯誤: {e}", file=sys.stderr)
         sys.exit(1)
 
 
