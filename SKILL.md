@@ -7,7 +7,7 @@ description: Query Taiwan High-Speed Rail (THSRC) information including timetabl
 
 ## Overview
 
-Provide real-time Taiwan High-Speed Rail (台湾高铁) information through the TDX (Transport Data Exchange) API. Support queries for timetables, live schedules, specific train information, and seat availability across all 12 THSR stations.
+Provide real-time Taiwan High-Speed Rail (台灣高鐵) information through the TDX (Transport Data Exchange) API. Support queries for timetables, live schedules, specific train information, and seat availability across all 12 THSR stations.
 
 ## When to Use This Skill
 
@@ -17,7 +17,7 @@ Activate this skill when users request:
 - Specific train number information
 - Seat availability for routes
 - THSR station information
-- Queries mentioning "高铁", "THSR", "台湾高铁", or station names like "台北", "左营", etc.
+- Queries mentioning "高鐵", "THSR", "台灣高鐵", or station names like "台北", "左營", etc.
 
 ## Prerequisites
 
@@ -60,7 +60,7 @@ python thsrc_api.py timetable <origin> <destination> <date>
 **Examples:**
 ```bash
 # Using Chinese names
-python thsrc_api.py timetable 台北 左营 2024-01-15
+python thsrc_api.py timetable 台北 左營 2024-01-15
 
 # Using English names
 python thsrc_api.py timetable Taipei Zuoying 2024-01-15
@@ -148,12 +148,12 @@ python thsrc_api.py seats 台北 高雄 2024-01-15
 ## Station Name Handling
 
 Support three formats for station input:
-- **Chinese names**: 台北, 左营, 台中 (most common)
+- **Chinese names**: 台北, 左營, 台中 (most common)
 - **English names**: Taipei, Zuoying, Taichung
 - **Station IDs**: 1000, 1070, 1040
 
 **Aliases:**
-- 高雄 = 左营 (both refer to station ID 1070)
+- 高雄 = 左營 (both refer to station ID 1070)
 
 Load `references/stations.md` when station mapping is needed.
 
@@ -163,7 +163,7 @@ All dates must follow `YYYY-MM-DD` format (e.g., 2024-01-15).
 
 Convert natural language dates:
 - "明天" (tomorrow) → Calculate tomorrow's date
-- "下周一" (next Monday) → Calculate date
+- "下週一" (next Monday) → Calculate date
 - "1/15" → Convert to 2024-01-15
 
 ## Error Handling
